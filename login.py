@@ -37,5 +37,4 @@ class LoginWindow:
             main.mainloop()
         else:
             messagebox.showerror("Error", "Invalid credentials")
-
-   
+    # login page
