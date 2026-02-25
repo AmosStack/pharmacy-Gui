@@ -136,17 +136,21 @@ class PharmacyApp(tk.Tk, InventoryMixin, UserMixin, SalesMixin, PatientMixin, Re
             self.notebook.add(self.alerts_tab, text="Alerts")
             self.notebook.add(self.users_tab, text="Staff Management")
 
-        # Build Tabs
-        self._safe_build_tab(self.build_sales_tab, "Sales")
-        self._safe_build_tab(self.build_patients_tab, "Patients")
+        self._tab_builders = {
+            "sales": (self.sales_tab, self.build_sales_tab, "Sales"),
+            "patients": (self.patients_tab, self.build_patients_tab, "Patients"),
+        }
 
         if self.role == "manager":
-            self._safe_build_tab(self.build_inventory_tab, "Inventory")
-            self._safe_build_tab(self.build_reports_tab, "Reports")
-            self._safe_build_tab(self.build_alerts_tab, "Alerts")
-            self._safe_build_tab(self.build_users_tab, "Staff Management")
+            self._tab_builders.update({
+                "inventory": (self.inventory_tab, self.build_inventory_tab, "Inventory"),
+                "reports": (self.reports_tab, self.build_reports_tab, "Reports"),
+                "alerts": (self.alerts_tab, self.build_alerts_tab, "Alerts"),
+                "users": (self.users_tab, self.build_users_tab, "Staff Management"),
+            })
 
-        self.notebook.select(self.sales_tab)
+        self._built_tabs = set()
+        self.show_sales_tab()
 
     def _safe_build_tab(self, builder, tab_name):
         try:
@@ -155,23 +159,30 @@ class PharmacyApp(tk.Tk, InventoryMixin, UserMixin, SalesMixin, PatientMixin, Re
             messagebox.showerror("Tab Error", f"Failed to load {tab_name} tab:\n{e}")
 
     # ---------------- Sidebar Tab Switching ----------------
+    def _show_tab(self, tab_key):
+        tab_widget, builder, tab_name = self._tab_builders[tab_key]
+        if tab_key not in self._built_tabs:
+            self._safe_build_tab(builder, tab_name)
+            self._built_tabs.add(tab_key)
+        self.notebook.select(tab_widget)
+
     def show_sales_tab(self):
-        self.notebook.select(self.sales_tab)
+        self._show_tab("sales")
 
     def show_patients_tab(self):
-        self.notebook.select(self.patients_tab)
+        self._show_tab("patients")
 
     def show_inventory_tab(self):
-        self.notebook.select(self.inventory_tab)
+        self._show_tab("inventory")
 
     def show_reports_tab(self):
-        self.notebook.select(self.reports_tab)
+        self._show_tab("reports")
 
     def show_alerts_tab(self):
-        self.notebook.select(self.alerts_tab)
+        self._show_tab("alerts")
 
     def show_users_tab(self):
-        self.notebook.select(self.users_tab)
+        self._show_tab("users")
 
     def open_account_window(self):
         account_win = tk.Toplevel(self.root)
@@ -300,7 +311,5 @@ class PharmacyApp(tk.Tk, InventoryMixin, UserMixin, SalesMixin, PatientMixin, Re
             return
 
         self.root.destroy()
-        from login import LoginWindow
-        login_root = tk.Tk()
-        LoginWindow(login_root)
-        login_root.mainloop()
+        from main import launch_homepage
+        launch_homepage()
