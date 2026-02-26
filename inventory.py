@@ -40,9 +40,9 @@ class InventoryMixin:
         self.save_btn = tk.Button(
             form,
             text="Add Medicine",
-            bg="#51fd0d",
+            bg="#28a745",
             fg="white",
-            activebackground="#2ad70b",
+            activebackground="#28a745",
             activeforeground="white",
             relief="flat",
             bd=0,

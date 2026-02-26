@@ -191,7 +191,8 @@ class PharmacyApp(InventoryMixin, UserMixin, SalesMixin, PatientMixin, ReportsMi
             })
 
         self._built_tabs = set()
-        self.show_sales_tab()
+        self.notebook.select(self.sales_tab)
+        self.root.after(1, self.show_sales_tab)
 
     def _safe_build_tab(self, builder, tab_name):
         try:

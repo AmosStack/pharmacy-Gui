@@ -27,7 +27,7 @@ class UserMixin:
         tk.Button(
             form,
             text="Add User",
-            bg="#51fd0d",
+            bg="#28a745",
             fg="white",
             command=self.save_user
         ).grid(row=3, column=0, columnspan=2, pady=10)
