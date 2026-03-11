@@ -124,6 +124,8 @@ Default users:
 - Manager: admin / admin123
 - Staff: staff1 / 1234
 
+**manager may add more staffs**
+
 ## Run The Project
 
 Make sure the virtual environment is activated before starting the app.
