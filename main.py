@@ -8,7 +8,7 @@ from loginpage import LoginPage
 
 def launch_homepage():
     root = tk.Tk()
-    root.title("Groly Pharma Ltd")
+    root.title("Pharmacy managent system")
     root.geometry("1920x1080")
     root.state("zoomed")
 
@@ -17,16 +17,20 @@ def launch_homepage():
 
     top_bar = tk.Frame(root, bg="navy", height=50)
     top_bar.pack(side="top", fill="x")
-    title_label = tk.Label(top_bar, text="Groly Pharma Ltd", fg="white", bg="navy", font=("Arial", 20, "bold"))
+    title_label = tk.Label(top_bar, text="Pharmacy managent system", fg="white", bg="navy", font=("Arial", 20, "bold"))
     title_label.pack(pady=5)
 
     footer = tk.Frame(root, bg="gray", height=40)
     footer.pack(side="bottom", fill="x")
-    footer_label = tk.Label(footer, text="© 2026 Groly Pharma Ltd. All rights reserved.", bg="gray", fg="white")
+    footer_label = tk.Label(footer, text="© 2026 pharmacy  managent system. All rights reserved.", bg="gray", fg="white")
     footer_label.pack(pady=5)
 
-    container = tk.Frame(root, bg="white")
-    container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.4, relheight=0.55)
+    container = tk.Frame(root, bg="white", width=500, height=400)
+    container.place(relx=0.5, rely=0.5, anchor="center")
+    container.pack_propagate(False)
+    container.grid_propagate(False)
+    container.grid_rowconfigure(0, weight=1)
+    container.grid_columnconfigure(0, weight=1)
     frames = {}
 
     for page in (Homepage, LoginPage):
@@ -82,10 +86,6 @@ def launch_homepage():
     else:
         bg_label.config(bg="#f0f4ff")
 
-    def center_frames(_event=None):
-        container.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.4, relheight=0.55)
-
-    root.bind("<Configure>", center_frames)
     root.mainloop()
 
 
