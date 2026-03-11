@@ -62,11 +62,43 @@ This project is suitable as:
 
 - Python 3.10 or newer recommended
 - MySQL server
-- Required Python packages:
+
+## Python Environment Setup
+
+This project should be run inside a dedicated virtual environment so that all dependencies are installed locally for this project and do not conflict with global Python packages.
+
+Create a virtual environment in the project folder:
+
+```powershell
+python -m venv .venv
+```
+
+Activate it on Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+If you are using Command Prompt instead of PowerShell:
+
+```bat
+.venv\Scripts\activate.bat
+```
+
+After activation, install all required dependencies inside the virtual environment:
 
 ```bash
 pip install sqlalchemy mysql-connector-python pymysql pillow
 ```
+
+Installed packages in the virtual environment:
+
+- sqlalchemy
+- mysql-connector-python
+- pymysql
+- pillow
+
+Whenever you open the project again, activate .venv before running the application or database scripts.
 
 ## Database Setup
 
@@ -93,6 +125,8 @@ Default users:
 - Staff: staff1 / 1234
 
 ## Run The Project
+
+Make sure the virtual environment is activated before starting the app.
 
 ```bash
 python main.py
