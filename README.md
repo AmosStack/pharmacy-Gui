@@ -1,131 +1,105 @@
-# Pharmacy Management System - OOP Implementation Guide
+# Pharmacy Management System
 
-This document explains how Object-Oriented Programming (OOP) is implemented in this project using the four pillars:
+This project is a desktop pharmacy operations application built with Python, Tkinter, SQLAlchemy, and MySQL. It is designed to help a pharmacy manage day-to-day work such as medicine inventory, sales recording, patient tracking, reporting, alerts, and staff access control from a single graphical interface.
 
-- Inheritance
-- Polymorphism
-- Encapsulation
-- Abstraction
+## Project Definition
 
----
+The system provides a role-based pharmacy dashboard where managers and staff sign in and work with the parts of the system relevant to their responsibilities.
 
-## 1) Inheritance
+- Staff users can handle sales and patient-related workflows.
+- Manager users can additionally manage inventory, view reports, monitor alerts, and manage staff accounts.
 
-Inheritance is primarily used through mixins and Tkinter class hierarchies.
+The application follows a modular design. The main dashboard coordinates several feature-specific modules, while the database layer uses SQLAlchemy models backed by a MySQL database.
 
-### a) Main app with multiple inheritance
-In `pharmacy.py`, `PharmacyApp` inherits from multiple mixin classes:
+## Core Features
 
-- `InventoryMixin`
-- `UserMixin`
-- `SalesMixin`
-- `PatientMixin`
-- `ReportsMixin`
-- `AlertMixin`
+- Secure login with role-based access
+- Medicine inventory and stock entry management
+- Sales recording and sale item tracking
+- Patient registration and history tracking
+- Reporting for pharmacy operations
+- Alerts for stock and medicine expiry conditions
+- Staff account management for managers
 
-This allows `PharmacyApp` to reuse and combine feature-specific behavior from separate modules.
+## How The Project Is Organized
 
-### b) UI class inheritance from Tkinter base classes
-- `Homepage` inherits from `tk.Frame` (`homepg.py`)
-- `LoginPage` inherits from `tk.Frame` (`loginpage.py`)
-- `LoginForm` inherits from `ttk.Frame` (`loginpage.py`)
+- main.py: starts the application and opens the home/login flow
+- pharmacy.py: main dashboard window and module integration
+- loginpage.py: login form and authentication flow
+- homepg.py: landing screen
+- inventory.py: inventory and stock-related features
+- sales.py: sales workflow
+- patients.py: patient management
+- reports.py: reporting features
+- alert.py: alert-related views
+- users.py: staff management
+- models.py: SQLAlchemy data models
+- connector.py: database connection settings
+- db.py: database table creation/reset script
+- admin.py: seed script for default users
+- db_tables/: SQL reference scripts for database tables
 
-These classes inherit standard widget behavior and extend it with project-specific UI logic.
+## Data Model
 
----
+The application is centered around these core entities:
 
-## 2) Polymorphism
+- User: stores usernames, passwords, and roles
+- Medicine: stores medicine details, price, quantity, type, and expiry date
+- Patient: stores patient identity and medical history
+- Sale: records a transaction linked to a patient
+- SaleItem: stores line items for each sale
+- StockEntry: tracks added medicine stock over time
 
-Polymorphism appears through dynamic method dispatch and duck typing.
+## Intended Use
 
-### a) Runtime-selected tab builders
-In `PharmacyApp`, `_tab_builders` maps tab keys to different build methods (`build_sales_tab`, `build_inventory_tab`, etc.).
+This project is suitable as:
 
-The `_show_tab` method calls whichever builder is selected at runtime, and each builder has the same callable interface but different behavior depending on the feature module.
+- A school or university pharmacy management system project
+- A learning project for Tkinter, SQLAlchemy, and MySQL integration
+- A base application that can be extended with billing, prescriptions, audit logs, or analytics
 
-### b) Duck typing with optional behavior
-In several places, code checks for method existence before calling:
+## Requirements
 
-- `hasattr(self, "load_medicines_for_sale")`
-- `hasattr(self, "load_patients_for_sale")`
+- Python 3.10 or newer recommended
+- MySQL server
+- Required Python packages:
 
-This means objects are used based on supported behavior, not strict type checks.
+```bash
+pip install sqlalchemy mysql-connector-python pymysql pillow
+```
 
-### c) Cursor proxy behavior
-`_CursorProxy` in `pharmacy.py` supports both:
+## Database Setup
 
-- callable style (`self.db.cursor(dictionary=True)`)
-- direct cursor-like attribute access (delegated via `__getattr__`)
+Database settings are read from environment variables in connector.py.
 
-This is a flexible polymorphic adapter pattern.
+Default values:
 
----
+- DB_HOST=localhost
+- DB_PORT=3307
+- DB_USER=root
+- DB_PASSWORD=Aruserver@123
+- DB_NAME=pharmacy
 
-## 3) Encapsulation
+After configuring the database, initialize the schema and seed default accounts:
 
-Encapsulation is used by grouping data and behavior inside classes and restricting direct access by convention.
+```bash
+python db.py
+python admin.py
+```
 
-### a) Internal state in helper classes
-`_CursorProxy` and `_LegacyDBAdapter` keep internal connection details in attributes like:
+Default users:
 
-- `_connection`
-- `_default_cursor`
+- Manager: admin / admin123
+- Staff: staff1 / 1234
 
-These internals are hidden from other modules behind methods like `commit()` and `rollback()`.
+## Run The Project
 
-### b) App state management in `PharmacyApp`
-`PharmacyApp` encapsulates global application state such as:
+```bash
+python main.py
+```
 
-- DB session/connection (`session`, `conn`, `cursor`, `db`)
-- user context (`role`, `username`)
-- UI state (`_tab_builders`, `_built_tabs`)
+## Notes
 
-### c) Feature-level encapsulation in mixins
-Each mixin owns its own UI components and feature logic:
-
-- inventory logic in `inventory.py`
-- sales logic in `sales.py`
-- patient logic in `patients.py`
-- reports logic in `reports.py`
-- staff logic in `users.py`
-
----
-
-## 4) Abstraction
-
-Abstraction is implemented by exposing simple interfaces while hiding low-level details.
-
-### a) Database adapter abstraction
-`_LegacyDBAdapter` abstracts DB operations into a small interface:
-
-- `cursor`
-- `commit()`
-- `rollback()`
-
-Feature modules can use DB actions without handling raw connection complexity everywhere.
-
-### b) Centralized DB configuration
-`connector.py` abstracts environment-based DB setup by providing:
-
-- `DATABASE_URL`
-- `engine`
-- `SessionLocal`
-- `Base`
-
-This keeps DB configuration in one place.
-
-### c) Modular feature abstraction via mixins
-Each mixin exposes high-level operations (example: `build_inventory_tab()`, `generate_report()`, `add_patient()`) and hides implementation details internally.
-
----
-
-## Summary
-
-The project uses OOP effectively in a modular way:
-
-- **Inheritance** organizes code reuse through mixins and UI base classes.
-- **Polymorphism** enables runtime behavior selection and duck-typed method use.
-- **Encapsulation** keeps state and logic grouped in focused classes.
-- **Abstraction** simplifies complex systems (DB + UI features) behind clean interfaces.
-
-This structure makes the system easier to maintain, extend, and test feature-by-feature.
+- The interface is built with Tkinter and intended for desktop use.
+- The project mixes a GUI layer with feature mixins to keep responsibilities separated by module.
+- SQL scripts in db_tables/ can be used as a reference for the database structure.
